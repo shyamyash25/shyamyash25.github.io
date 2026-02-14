@@ -161,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
             lines.push('', '---', 'Sent from shyamstudios.online');
 
             const whatsappMessage = encodeURIComponent(lines.join('\n'));
-            const whatsappUrl = `https://wa.me/919876543210?text=${whatsappMessage}`;
+            const whatsappUrl = `https://wa.me/918115114790?text=${whatsappMessage}`;
 
             // Show success + open WhatsApp
             bookingForm.style.display = 'none';
