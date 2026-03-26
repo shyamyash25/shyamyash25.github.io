@@ -35,78 +35,42 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ===== PORTFOLIO FILTERS =====
-    const filterTabs = document.getElementById('filter-tabs');
-    const portfolioGrid = document.getElementById('portfolio-grid');
-    if (filterTabs && portfolioGrid) {
-        const buttons = filterTabs.querySelectorAll('.filter-btn');
-        const items = portfolioGrid.querySelectorAll('.portfolio-item');
+    // ===== DIGITAL SERVICES MODAL =====
+    const dsOverlay = document.getElementById('ds-modal-overlay');
+    const dsTitle = document.getElementById('ds-modal-title');
+    const dsDocs = document.getElementById('ds-modal-docs');
+    const dsClose = document.getElementById('ds-modal-close');
+    const dsCancel = document.getElementById('ds-modal-cancel');
+    const allDsCards = document.querySelectorAll('.ds-card[data-service]');
 
-        buttons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                // Update active state
-                buttons.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
+    if (allDsCards.length && dsOverlay) {
+        allDsCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const service = card.dataset.service || '';
+                const docs = (card.dataset.docs || '').split(',');
 
-                const category = btn.dataset.category;
-
-                items.forEach(item => {
-                    if (category === 'all' || item.dataset.category === category) {
-                        item.style.display = '';
-                        item.style.opacity = '0';
-                        item.style.transform = 'scale(0.95)';
-                        requestAnimationFrame(() => {
-                            item.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
-                            item.style.opacity = '1';
-                            item.style.transform = 'scale(1)';
-                        });
-                    } else {
-                        item.style.display = 'none';
-                    }
-                });
-            });
-        });
-    }
-
-    // ===== LIGHTBOX =====
-    const lightbox = document.getElementById('lightbox');
-    const lightboxImg = document.getElementById('lightbox-img');
-    const lightboxLabel = document.getElementById('lightbox-label');
-    const lightboxCat = document.getElementById('lightbox-cat');
-    const lightboxClose = document.getElementById('lightbox-close');
-
-    if (lightbox && portfolioGrid) {
-        const items = portfolioGrid.querySelectorAll('.portfolio-item');
-        items.forEach(item => {
-            item.addEventListener('click', () => {
-                const img = item.querySelector('img');
-                const label = item.dataset.label || '';
-                const category = item.dataset.category || '';
-
-                lightboxImg.src = img.src.replace(/w=600/, 'w=1200').replace(/h=\d+/, 'h=900');
-                lightboxImg.alt = img.alt;
-                lightboxLabel.textContent = label;
-                lightboxCat.textContent = category.charAt(0).toUpperCase() + category.slice(1);
-                lightbox.classList.add('open');
+                dsTitle.textContent = service;
+                dsDocs.innerHTML = docs.map(d => `<li>${d.trim()}</li>`).join('');
+                dsOverlay.classList.add('show');
                 document.body.style.overflow = 'hidden';
             });
         });
 
-        // Close lightbox
-        function closeLightbox() {
-            lightbox.classList.remove('open');
+        function closeModal() {
+            dsOverlay.classList.remove('show');
             document.body.style.overflow = '';
         }
 
-        if (lightboxClose) lightboxClose.addEventListener('click', closeLightbox);
+        if (dsClose) dsClose.addEventListener('click', closeModal);
+        if (dsCancel) dsCancel.addEventListener('click', closeModal);
 
-        lightbox.addEventListener('click', (e) => {
-            if (e.target === lightbox) closeLightbox();
+        dsOverlay.addEventListener('click', (e) => {
+            if (e.target === dsOverlay) closeModal();
         });
 
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && lightbox.classList.contains('open')) {
-                closeLightbox();
+            if (e.key === 'Escape' && dsOverlay.classList.contains('show')) {
+                closeModal();
             }
         });
     }
@@ -166,6 +130,41 @@ document.addEventListener('DOMContentLoaded', () => {
             // Show success + open WhatsApp
             bookingForm.style.display = 'none';
             if (formSuccess) formSuccess.classList.add('show');
+
+            window.open(whatsappUrl, '_blank');
+        });
+    }
+
+    // ===== JANSEVA KENDRA FORM → WHATSAPP =====
+    const jskForm = document.getElementById('jsk-form');
+    const jskFormSuccess = document.getElementById('jsk-form-success');
+    if (jskForm) {
+        jskForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const name = document.getElementById('jsk-name')?.value || '';
+            const mobile = document.getElementById('jsk-mobile')?.value || '';
+            const service = document.getElementById('jsk-service')?.value || '';
+            const address = document.getElementById('jsk-address')?.value || '';
+
+            const lines = [
+                `🏛️ *Jan Seva Kendra — New Application*`,
+                ``,
+                `👤 *Name:* ${name}`,
+                `📞 *Mobile:* ${mobile}`,
+            ];
+
+            if (service) lines.push(`📋 *Service:* ${service}`);
+            if (address) lines.push(`📍 *Address:* ${address}`);
+
+            lines.push('', '---', 'Sent from shyamstudios.online/janseva-kendra');
+
+            const whatsappMessage = encodeURIComponent(lines.join('\n'));
+            const whatsappUrl = `https://wa.me/918115114790?text=${whatsappMessage}`;
+
+            // Show success + open WhatsApp
+            jskForm.style.display = 'none';
+            if (jskFormSuccess) jskFormSuccess.classList.add('show');
 
             window.open(whatsappUrl, '_blank');
         });
